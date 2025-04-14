@@ -22,15 +22,8 @@ request.interceptors.request.use(
 
 // 响应拦截器
 request.interceptors.response.use(
-  response => {
-    const res = response.data
-    // 这里可以统一处理响应
-    if (res.code !== 200) {
-      // 处理错误情况
-      return Promise.reject(new Error(res.message || '请求失败'))
-    }
-    return res
-  },
+  response => response.data,
+  
   error => {
     // 处理网络错误等
     console.error('请求错误:', error)

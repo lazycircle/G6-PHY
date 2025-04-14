@@ -1,6 +1,8 @@
 <template>
   <div class="profile-container">
+    <NavbarView />
     <div class="profile-card">
+      
       <div class="card-header">
         <h2>个人资料</h2>
         <button v-if="!isEditing" class="btn-primary" @click="handleEdit">编辑</button>
@@ -116,7 +118,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getUserProfile, updateUserProfile, updatePassword } from '@/api/user'
 import PasswordModal from '@/components/PasswordModal.vue'
-
+import NavbarView from '@/components/Layout/NavbarView.vue'
 const userInfo = ref({})
 const isEditing = ref(false)
 const showPasswordModal = ref(false)
@@ -135,7 +137,7 @@ const form = reactive({
 
 const fetchUserInfo = async () => {
   try {
-    const { data } = await getUserProfile(82)
+    const { data } = await getUserProfile(localStorage.getItem('id'))
     userInfo.value = data
     Object.assign(form, data)
   } catch (error) {
@@ -155,7 +157,7 @@ const handleCancel = () => {
 
 const handleSave = async () => {
   try {
-    await updateUserProfile(82, form)
+    await updateUserProfile(localStorage.getItem('id'), form)
     alert('保存成功')
     isEditing.value = false
     await fetchUserInfo()
@@ -167,7 +169,7 @@ const handleSave = async () => {
 
 const handlePasswordChange = async (passwordData) => {
   try {
-    await updatePassword(82, passwordData)
+    await updatePassword(localStorage.getItem('id'), passwordData)
     alert('密码修改成功')
     showPasswordModal.value = false
   } catch (error) {
@@ -211,11 +213,9 @@ onMounted(() => {
 
 <style scoped>
 .profile-container {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  background: #f8f9fa;
   min-height: 100vh;
+  background: #f5f5f5;
+  padding: 2rem 0;
 }
 
 .profile-card {

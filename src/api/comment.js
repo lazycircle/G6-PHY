@@ -86,14 +86,13 @@ export const commentApi = {
     return api.get(`/articles/${articleId}/comments`)
   },
 
-  // 点赞评论
-  likeComment: (commentId) => {
-    return api.post(`/comments/${commentId}/like`)
-  },
-
-  // 取消点赞评论
-  unlikeComment: (commentId) => {
-    return api.post(`/comments/${commentId}/unlike`)
+  // 点赞/取消点赞评论
+  toggleCommentLike: (commentId) => {
+    return api.post('/likes', null, {params:{
+      type: 'comment',
+      target_id: commentId
+    }
+  })
   },
 
   // 对评论的回复进行回复

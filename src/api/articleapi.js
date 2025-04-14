@@ -61,6 +61,14 @@ export const articleApi = {
   publishArticle: (data) => {
     console.log(data)
     return api.post('/articles', data)
+  },
+  // 点赞/取消点赞
+  toggleLike: (type, targetId) => {
+    return api.post('/likes', null, { params:{
+      type,
+      target_id: targetId
+    }
+    })
   }
 }
 

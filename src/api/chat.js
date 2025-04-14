@@ -97,7 +97,7 @@ export function closeWebSocket() {
 // 获取聊天历史记录
 export const getChatHistory = async (therapistId) => {
   try {
-    const response = await fetch(`/api/chat/history/${therapistId}`)
+    const response = await fetch(`/chat/history/${therapistId}`)
     return await response.json()
   } catch (error) {
     console.error('Failed to fetch chat history:', error)
@@ -111,7 +111,7 @@ export const uploadImage = async (file) => {
     const formData = new FormData()
     formData.append('image', file)
     
-    const response = await fetch('/api/chat/upload-image', {
+    const response = await fetch('/chat/upload-image', {
       method: 'POST',
       body: formData
     })

@@ -20,7 +20,7 @@
               <i class="fas fa-eye"></i>
               {{ article.views_count }} 阅读
             </span>
-            <span class="likes">
+            <span class="likes" @click="handleLike" :class="{ 'liked': isLiked }">
               <i class="fas fa-heart"></i>
               {{ article.liked_count }} 点赞
             </span>
@@ -73,6 +73,7 @@ const route = useRoute()
 const router = useRouter()
 const article = ref(null)
 const similarArticles = ref([])
+const isLiked = ref(false)
 
 const formatDate = (dateStr) => {
   try {
@@ -127,6 +128,33 @@ const viewArticle = (articleId) => {
   router.push(`/article/${articleId}`)
   console.log(articleId)
 }
+
+const handleLike = async () => {
+  // 保存原始状态，用于回滚
+  const originalLikedCount = article.value.liked_count
+  const originalIsLiked = isLiked.value
+  
+  // 乐观更新UI
+  article.value.liked_count = isLiked.value ? 
+    article.value.liked_count - 1 : 
+    article.value.liked_count + 1
+  isLiked.value = !isLiked.value
+
+  try {
+    const response = await articleapi.toggleLike('article', route.params.id)
+    if (response.data) {
+      // 使用服务器返回的实际数据更新状态
+      article.value.liked_count = response.data.liked_count
+      isLiked.value = response.data.is_liked
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error)
+    // 发生错误时回滚到原始状态
+    article.value.liked_count = originalLikedCount
+    isLiked.value = originalIsLiked
+  }
+}
+
 // 监听路由变化
 watch(() => route.params.id, (newId, oldId) => {
   if (newId !== oldId) {
@@ -465,5 +493,27 @@ onMounted(() => {
 
 .read-more-btn:hover {
   background: #357abd;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.likes.liked {
+  color: #e74c3c;
+}
+
+.likes.liked i {
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 </style>

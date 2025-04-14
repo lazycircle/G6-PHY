@@ -164,6 +164,7 @@ export default {
           keyword: searchKeyword.value,
           tags: selectedTags.value.join(',')
         });
+        console.log(123)
         console.log(response)
         forums.value = response.data.forums;
         total.value = response.data.total;

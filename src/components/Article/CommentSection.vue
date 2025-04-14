@@ -267,7 +267,7 @@ const submitComment = async () => {
 
   try {
     const response = await commentApi.commentArticle(props.articleId, tempComment.content)
-    if (response.code === 200) {
+    if (response.data) {
       showMessage('评论发表成功', 'success')
       // 使用真实数据替换临时评论
       const realComment = {
@@ -340,7 +340,7 @@ const submitReply = async (comment) => {
 
   try {
     const response = await commentApi.replyComment(comment.id, `回复 ${comment.username}：${replyContent.value}`)
-    if (response.code === 200) {
+    if (response.data) {
       showMessage('回复发表成功', 'success')
       replyContent.value = '' // 清空输入框
       // 使用真实数据替换临时回复
@@ -375,19 +375,28 @@ const submitReply = async (comment) => {
 
 // 点赞/取消点赞
 const toggleLike = async (comment) => {
+  // 保存原始状态，用于回滚
+  const originalLikedCount = comment.liked_count
+  const originalIsLiked = comment.is_liked
+  
+  // 乐观更新UI
+  comment.liked_count = comment.is_liked ? 
+    comment.liked_count - 1 : 
+    comment.liked_count + 1
+  comment.is_liked = !comment.is_liked
+
   try {
-    const response = await (comment.is_liked ? 
-      commentApi.unlikeComment(comment.id) : 
-      commentApi.likeComment(comment.id)
-    )
-    if (response.code === 200) {
-      comment.is_liked = !comment.is_liked
-      comment.liked_count += comment.is_liked ? 1 : -1
+    const response = await commentApi.toggleCommentLike(comment.id)
+    if (response.data) {
+      // 使用服务器返回的实际数据更新状态
+      comment.liked_count = response.data.liked_count
+      comment.is_liked = response.data.is_liked
       showMessage(comment.is_liked ? '点赞成功' : '已取消点赞', 'success')
-    } else {
-      showMessage(response.message || '操作失败', 'error')
     }
   } catch (error) {
+    // 发生错误时回滚到原始状态
+    comment.liked_count = originalLikedCount
+    comment.is_liked = originalIsLiked
     showMessage(error.message || '操作失败', 'error')
   }
 }
@@ -434,7 +443,7 @@ const submitReplyToReply = async (comment, reply) => {
 
   try {
     const response = await commentApi.replyComment(comment.id, `回复 ${reply.username}：${replyToReplyContent.value}`)
-    if (response.code === 200) {
+    if (response.data) {
       showMessage('回复发表成功', 'success')
       // 使用真实数据替换临时回复
       const realReply = {

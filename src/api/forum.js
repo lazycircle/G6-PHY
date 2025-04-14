@@ -45,7 +45,7 @@ api.interceptors.response.use(
  * @param {string} params.tags - 标签字符串，例如 "1,3,5"
  */
 export function getForumList({ page = 1, keyword = '', tags = '' }) {
-  return api.get('/api/forums', {
+  return api.get('/forums', {
     params: {
       page,
       keyword,
@@ -62,7 +62,7 @@ export function getForumList({ page = 1, keyword = '', tags = '' }) {
  * @param {number[]} data.tags - 标签ID数组
  */
 export function createForum(data) {
-  return axios.post('/api/forums', data);
+  return axios.post('/forums', data);
 }
 
 /**
@@ -71,7 +71,7 @@ export function createForum(data) {
  * @param {number} params.page - 页码
  */
 export function getMyCreatedForums({ page = 1 }) {
-  return api.get('/api/forums/create', {
+  return api.get('/forums/create', {
     params: { page }
   });
 }
@@ -82,7 +82,7 @@ export function getMyCreatedForums({ page = 1 }) {
  * @param {number} params.page - 页码
  */
 export function getMyJoinedForums({ page = 1 }) {
-  return api.get('/api/forums/join', {
+  return api.get('/forums/join', {
     params: { page }
   });
 }
